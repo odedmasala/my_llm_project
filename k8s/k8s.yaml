@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-llm-project
+spec:
+  selector:
+    matchLabels:
+      app: my-llm-project
+  template:
+    metadata:
+      labels:
+        app: my-llm-project
+    spec:
+      containers:
+        - name: my-llm-project
+          image: my-llm-project
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DATABASE_URL
+              value: "postgresql+asyncpg://admin:securepass@postgres:5433/myllmdb"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-llm-project
+spec:
+  type: NodePort # צריך כדי לאפשר nodePort
+  selector:
+    app: my-llm-project
+  ports:
+    - port: 8000
+      targetPort: 8000
+      nodePort: 30000 # פורט NodePort בין 30000 ל-32767
