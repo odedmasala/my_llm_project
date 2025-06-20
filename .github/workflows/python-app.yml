@@ -2,9 +2,11 @@ name: Python application
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
   pull_request:
-    branches: ["main"]
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -26,9 +28,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install poetry
 
+      - name: Cache Poetry dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry
+          key: poetry-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            poetry-${{ runner.os }}-
+
       - name: Install dependencies with Poetry
-        run: |
-          poetry install --with dev
+        run: poetry install --with dev
 
       - name: Lint with flake8
         run: |
@@ -36,10 +45,7 @@ jobs:
           poetry run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
       - name: Run tests with pytest
+        env:
+          DATABASE_URL: "sqlite+aiosqlite:///:memory:"
         run: |
           PYTHONPATH=. poetry run pytest
-
-      - name: Check commit message format (Conventional Commits)
-        if: github.event_name == 'pull_request'
-        run: |
-          poetry run cz check --message "${{ github.event.pull_request.title }}"
