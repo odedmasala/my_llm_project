@@ -3,6 +3,7 @@ name = "my-llm-project"
 version = "0.1.0"
 description = "FastAPI + Transformers LLM"
 authors = ["Oded Masala <odedmasala6@gmail.com>"]
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -15,6 +16,9 @@ sqlalchemy = "^2.0.41"
 asyncpg = "^0.30.0"
 python-dotenv = "^1.1.0"
 greenlet = "^3.2.3"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^4.2.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
