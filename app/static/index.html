@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LLM Q&A</title>
+</head>
+<body>
+  <h1>Ask the LLM</h1>
+  <form id="qa-form">
+    <label>
+      Question:<br />
+      <input type="text" id="question" required />
+    </label>
+    <br /><br />
+    <label>
+      Context:<br />
+      <textarea id="context" rows="4" cols="50" required></textarea>
+    </label>
+    <br /><br />
+    <button type="submit">Ask</button>
+  </form>
+
+  <h2>Answer:</h2>
+  <div id="answer">...</div>
+
+  <script>
+    const form = document.getElementById('qa-form');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const question = document.getElementById('question').value;
+      const context = document.getElementById('context').value;
+
+      const res = await fetch(`/ask?question=${encodeURIComponent(question)}&context=${encodeURIComponent(context)}`);
+      const data = await res.json();
+
+      document.getElementById('answer').textContent = data.answer || "No answer received.";
+    });
+  </script>
+</body>
+</html>
