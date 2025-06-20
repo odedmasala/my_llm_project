@@ -1,0 +1,47 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Poetry
+# poetry.lock
+
+# Virtual environments
+.env
+.venv/
+venv/
+ENV/
+env/
+*.env
+
+# VSCode & Pyright
+.vscode/
+*.code-workspace
+pyrightconfig.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and local db files
+*.log
+*.sqlite3
+
+# Docker volumes (if mounted locally)
+pgdata/
+
+# Node/npm frontend (if added later)
+node_modules/
+dist/
+build/
+
+# Tilt & Kubernetes
+tilt.build/
+.kube/
+
+# Static files (generated)
+*.bak
+*.swp
+*.tmp
