@@ -3,13 +3,19 @@ from unittest.mock import patch
 import pytest
 from httpx import ASGITransport, AsyncClient
 
+from app.db import engine
 from app.main import app
+from app.models import Base
 
 
 @pytest.mark.asyncio
 @patch("app.main.qa")  # Mock the HuggingFace pipeline
 async def test_ask_endpoint(mock_qa):
-    # Arrange: Mock the QA model response
+    # Arrange: ensure tables exist
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+    # Mock the model response
     mock_qa.return_value = {"answer": "Paris"}
 
     transport = ASGITransport(app=app)
