@@ -1,13 +1,19 @@
+default_stages: [commit]
+
 repos:
   - repo: https://github.com/psf/black
     rev: 24.3.0
     hooks:
       - id: black
+        args: [--quiet]
+        auto_stage: true
 
   - repo: https://github.com/pre-commit/mirrors-isort
     rev: v5.10.1
     hooks:
       - id: isort
+        args: [--profile=black]
+        auto_stage: true
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
