@@ -2,39 +2,624 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>LLM Q&A</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IntelliQuery - AI-Powered Q&A</title>
+  <meta name="description" content="AI-Powered Question Answering with Context Understanding" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+  <style>
+    /* CSS Custom Properties (Design System) */
+    :root {
+      --primary-color: #6366f1;
+      --primary-dark: #4f46e5;
+      --primary-light: #818cf8;
+      --secondary-color: #f1f5f9;
+      --accent-color: #10b981;
+      --danger-color: #ef4444;
+      --warning-color: #f59e0b;
+
+      --text-primary: #0f172a;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8fafc;
+      --bg-tertiary: #f1f5f9;
+
+      --border-color: #e2e8f0;
+      --border-radius: 12px;
+      --border-radius-lg: 16px;
+      --border-radius-xl: 24px;
+
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-slow: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --text-primary: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --text-muted: #64748b;
+
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-tertiary: #334155;
+
+        --border-color: #334155;
+      }
+    }
+
+    /* Reset and Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Container and Layout */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .logo-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+      border-radius: var(--border-radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .title {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    /* Main Content */
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      flex: 1;
+      align-items: start;
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-primary);
+      border-radius: var(--border-radius-xl);
+      padding: 2rem;
+      box-shadow: var(--shadow-xl);
+      border: 1px solid var(--border-color);
+      transition: var(--transition-slow);
+      animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 25px 35px -5px rgb(0 0 0 / 0.1), 0 10px 15px -8px rgb(0 0 0 / 0.1);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+      border-radius: var(--border-radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1rem;
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* Form Styles */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .form-input, .form-textarea {
+      width: 100%;
+      padding: 1rem;
+      border: 2px solid var(--border-color);
+      border-radius: var(--border-radius);
+      font-family: inherit;
+      font-size: 1rem;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: var(--transition);
+      resize: vertical;
+    }
+
+    .form-input:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgb(99 102 241 / 0.1);
+    }
+
+    .form-textarea {
+      min-height: 120px;
+      line-height: 1.5;
+    }
+
+    /* Button Styles */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: var(--border-radius);
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: white;
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .btn-loading {
+      position: relative;
+      color: transparent;
+    }
+
+    .btn-loading::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 50%;
+      left: 50%;
+      margin-left: -10px;
+      margin-top: -10px;
+      border: 2px solid transparent;
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    /* Answer Section */
+    .answer-section {
+      animation: fadeInUp 0.8s ease-out 0.4s both;
+    }
+
+    .answer-content {
+      background: var(--bg-secondary);
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      border-left: 4px solid var(--accent-color);
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: var(--text-primary);
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transition: var(--transition-slow);
+    }
+
+    .answer-content.has-content {
+      text-align: left;
+      align-items: flex-start;
+      justify-content: flex-start;
+    }
+
+    .answer-placeholder {
+      color: var(--text-muted);
+      font-style: italic;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Status Messages */
+    .status-message {
+      padding: 1rem;
+      border-radius: var(--border-radius);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 500;
+    }
+
+    .status-error {
+      background: #fef2f2;
+      color: var(--danger-color);
+      border: 1px solid #fecaca;
+    }
+
+    .status-success {
+      background: #f0fdf4;
+      color: var(--accent-color);
+      border: 1px solid #bbf7d0;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.7;
+      }
+    }
+
+    .loading {
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 640px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .card {
+        padding: 1.5rem;
+      }
+
+      .btn {
+        width: 100%;
+        padding: 1.25rem;
+      }
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* Focus styles for accessibility */
+    .form-input:focus-visible,
+    .form-textarea:focus-visible,
+    .btn:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Ask the LLM</h1>
-  <form id="qa-form">
-    <label>
-      Question:<br />
-      <input type="text" id="question" required />
-    </label>
-    <br /><br />
-    <label>
-      Context:<br />
-      <textarea id="context" rows="4" cols="50" required></textarea>
-    </label>
-    <br /><br />
-    <button type="submit">Ask</button>
-  </form>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-brain"></i>
+        </div>
+        <div>
+          <h1 class="title">IntelliQuery</h1>
+          <p class="subtitle">AI-Powered Question Answering with Context Understanding</p>
+        </div>
+      </div>
+    </header>
 
-  <h2>Answer:</h2>
-  <div id="answer">...</div>
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Input Card -->
+      <section class="card">
+        <header class="card-header">
+          <div class="card-icon">
+            <i class="fas fa-question-circle"></i>
+          </div>
+          <h2 class="card-title">Ask Your Question</h2>
+        </header>
+
+        <form id="qa-form" novalidate>
+          <div class="form-group">
+            <label for="question" class="form-label">
+              <i class="fas fa-lightbulb"></i>
+              What would you like to know?
+            </label>
+            <input
+              type="text"
+              id="question"
+              class="form-input"
+              placeholder="e.g., What is the capital of France?"
+              required
+              aria-describedby="question-help"
+            />
+            <small id="question-help" class="form-help">Ask any question you'd like answered</small>
+          </div>
+
+          <div class="form-group">
+            <label for="context" class="form-label">
+              <i class="fas fa-align-left"></i>
+              Provide Context
+            </label>
+            <textarea
+              id="context"
+              class="form-textarea"
+              placeholder="Provide relevant context or background information that will help answer your question..."
+              required
+              aria-describedby="context-help"
+            ></textarea>
+            <small id="context-help" class="form-help">The more context you provide, the better the answer will be</small>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="submit-btn">
+            <i class="fas fa-paper-plane"></i>
+            Get Answer
+          </button>
+        </form>
+      </section>
+
+      <!-- Answer Card -->
+      <section class="card answer-section">
+        <header class="card-header">
+          <div class="card-icon">
+            <i class="fas fa-lightbulb"></i>
+          </div>
+          <h2 class="card-title">Your Answer</h2>
+        </header>
+
+        <div id="status-container"></div>
+
+        <div id="answer" class="answer-content">
+          <div class="answer-placeholder">
+            <i class="fas fa-info-circle"></i>
+            Ask a question to get started
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
 
   <script>
-    const form = document.getElementById('qa-form');
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const question = document.getElementById('question').value;
-      const context = document.getElementById('context').value;
+    // Modern JavaScript with proper error handling and UX improvements
+    class IntelliQuery {
+      constructor() {
+        this.form = document.getElementById('qa-form');
+        this.questionInput = document.getElementById('question');
+        this.contextInput = document.getElementById('context');
+        this.submitBtn = document.getElementById('submit-btn');
+        this.answerDiv = document.getElementById('answer');
+        this.statusContainer = document.getElementById('status-container');
 
-      const res = await fetch(`/ask?question=${encodeURIComponent(question)}&context=${encodeURIComponent(context)}`);
-      const data = await res.json();
+        this.init();
+      }
 
-      document.getElementById('answer').textContent = data.answer || "No answer received.";
+      init() {
+        this.form.addEventListener('submit', this.handleSubmit.bind(this));
+        this.questionInput.addEventListener('input', this.validateForm.bind(this));
+        this.contextInput.addEventListener('input', this.validateForm.bind(this));
+      }
+
+      validateForm() {
+        const question = this.questionInput.value.trim();
+        const context = this.contextInput.value.trim();
+        const isValid = question.length > 0 && context.length > 0;
+
+        this.submitBtn.disabled = !isValid;
+      }
+
+      showStatus(message, type = 'info') {
+        const statusEl = document.createElement('div');
+        statusEl.className = `status-message status-${type}`;
+
+        const icon = type === 'error' ? 'fas fa-exclamation-triangle' : 'fas fa-check-circle';
+        statusEl.innerHTML = `<i class="${icon}"></i>${message}`;
+
+        this.statusContainer.innerHTML = '';
+        this.statusContainer.appendChild(statusEl);
+
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+          if (statusEl.parentNode) {
+            statusEl.remove();
+          }
+        }, 5000);
+      }
+
+      setLoading(loading) {
+        if (loading) {
+          this.submitBtn.disabled = true;
+          this.submitBtn.classList.add('btn-loading');
+          this.submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i>Processing...';
+          this.answerDiv.classList.add('loading');
+        } else {
+          this.submitBtn.disabled = false;
+          this.submitBtn.classList.remove('btn-loading');
+          this.submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i>Get Answer';
+          this.answerDiv.classList.remove('loading');
+          this.validateForm(); // Re-validate in case inputs are empty
+        }
+      }
+
+      async handleSubmit(e) {
+        e.preventDefault();
+
+        const question = this.questionInput.value.trim();
+        const context = this.contextInput.value.trim();
+
+        if (!question || !context) {
+          this.showStatus('Please fill in both question and context fields.', 'error');
+          return;
+        }
+
+        this.setLoading(true);
+        this.statusContainer.innerHTML = '';
+
+        try {
+          const url = `/ask?question=${encodeURIComponent(question)}&context=${encodeURIComponent(context)}`;
+          const response = await fetch(url);
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+
+          const data = await response.json();
+
+          if (data.answer) {
+            this.displayAnswer(data.answer);
+            this.showStatus('Answer generated successfully!', 'success');
+          } else {
+            throw new Error('No answer received from the service.');
+          }
+
+        } catch (error) {
+          console.error('Error:', error);
+          this.showStatus(`Error: ${error.message}`, 'error');
+          this.displayAnswer('Sorry, I encountered an error while processing your question. Please try again.');
+        } finally {
+          this.setLoading(false);
+        }
+      }
+
+      displayAnswer(answer) {
+        this.answerDiv.innerHTML = answer;
+        this.answerDiv.classList.add('has-content');
+
+        // Smooth scroll to answer on mobile
+        if (window.innerWidth <= 768) {
+          this.answerDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }
+    }
+
+    // Initialize the application when DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+      new IntelliQuery();
+    });
+
+    // Add some nice touches
+    document.addEventListener('DOMContentLoaded', () => {
+      // Add floating animation to logo icon
+      const logoIcon = document.querySelector('.logo-icon');
+      if (logoIcon) {
+        setInterval(() => {
+          logoIcon.style.transform = 'translateY(-2px)';
+          setTimeout(() => {
+            logoIcon.style.transform = 'translateY(0)';
+          }, 200);
+        }, 3000);
+      }
     });
   </script>
 </body>

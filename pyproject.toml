@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "my-llm-project"
+name = "intelliquery"
 version = "0.1.0"
-description = "FastAPI + Transformers LLM"
+description = "IntelliQuery - AI-Powered Question Answering API with Context Understanding"
 authors = ["Oded Masala <odedmasala6@gmail.com>"]
 package-mode = false
 

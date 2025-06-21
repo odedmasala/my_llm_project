@@ -15,7 +15,7 @@ metadata:
   name: postgres-init-sql
 data:
   init.sql: |
-    CREATE DATABASE myllmdb;
+    CREATE DATABASE intelliquery;
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -47,6 +47,26 @@ spec:
               name: postgres-storage
             - mountPath: /docker-entrypoint-initdb.d
               name: init-db
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - admin
+                - -d
+                - postgres
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - admin
+                - -d
+                - postgres
+            initialDelaySeconds: 30
+            periodSeconds: 10
       volumes:
         - name: postgres-storage
           persistentVolumeClaim:

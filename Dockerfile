@@ -1,6 +1,12 @@
 # File: Dockerfile
 FROM python:3.11-slim
 
+# Metadata
+LABEL name="IntelliQuery"
+LABEL description="AI-Powered Question Answering API with Context Understanding"
+LABEL version="0.1.0"
+LABEL maintainer="Oded Masala <odedmasala6@gmail.com>"
+
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 

@@ -1,4 +1,4 @@
-name: Python application
+name: IntelliQuery CI/CD
 
 on:
   push:
