@@ -1,1 +1,1 @@
-CREATE DATABASE myllmdb;
+CREATE DATABASE intelliquery;
